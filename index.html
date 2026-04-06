@@ -414,7 +414,7 @@ let model=null;
 // Carga el modelo TF.js desde la carpeta modelo_web/
 async function loadModel(){
   try{
-    model=await tf.loadLayersModel('modelo_web/model.json');
+    model=await tf.loadGraphModel('modelo_web/model.json');
     // Warm-up para que la primera predicción sea rápida
     const dummy=tf.zeros([1,IMG_SIZE,IMG_SIZE,3]);
     model.predict(dummy).dispose();
