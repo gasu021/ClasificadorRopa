@@ -6,6 +6,7 @@
 <title>Clasificador de Prendas — Portfolio IA</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Fraunces:ital,wght@0,300;0,700;0,900;1,300&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.17.0/dist/tf.min.js"></script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{--ink:#0d0d0d;--paper:#f5f2eb;--accent:#c8432a;--accent2:#2a6ec8;--muted:#7a7570;--border:#d4cfc5;--card:#fff;--mono:'DM Mono',monospace;--serif:'Fraunces',serif;--sans:'DM Sans',sans-serif}
@@ -398,8 +399,35 @@ document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
 const bObs=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)e.target.querySelectorAll('.bar-inner').forEach(b=>b.style.transform='scaleX(1)');}),{threshold:.3});
 document.querySelectorAll('.dataset-grid').forEach(el=>bObs.observe(el));
 
-// IMAGE UPLOAD
-let imgB64=null;
+// ── CONFIGURACIÓN DEL MODELO ──────────────────────────────────────────────────
+const CLASS_NAMES=[
+  'black_dress','black_pants','black_shirt','black_shoes','black_shorts',
+  'blue_dress','blue_pants','blue_shirt','blue_shoes','blue_shorts',
+  'brown_pants','brown_shoes','brown_shorts',
+  'green_pants','green_shirt','green_shoes','green_shorts',
+  'red_dress','red_pants','red_shoes',
+  'white_dress','white_pants','white_shoes','white_shorts'
+];
+const IMG_SIZE=128;
+let model=null;
+
+// Carga el modelo TF.js desde la carpeta modelo_web/
+async function loadModel(){
+  try{
+    model=await tf.loadLayersModel('modelo_web/model.json');
+    // Warm-up para que la primera predicción sea rápida
+    const dummy=tf.zeros([1,IMG_SIZE,IMG_SIZE,3]);
+    model.predict(dummy).dispose();
+    dummy.dispose();
+    console.log('✅ Modelo cargado');
+  }catch(e){
+    console.warn('⚠️ No se pudo cargar el modelo:',e.message);
+  }
+}
+loadModel();
+
+// ── CARGA DE IMAGEN ───────────────────────────────────────────────────────────
+let currentFile=null;
 const fileInput=document.getElementById('fileInput');
 const previewImg=document.getElementById('previewImg');
 const uploadContent=document.getElementById('uploadContent');
@@ -409,19 +437,20 @@ const uploadZone=document.getElementById('uploadZone');
 fileInput.addEventListener('change',e=>{if(e.target.files[0])loadImg(e.target.files[0]);});
 uploadZone.addEventListener('dragover',e=>{e.preventDefault();uploadZone.classList.add('drag-over');});
 uploadZone.addEventListener('dragleave',()=>uploadZone.classList.remove('drag-over'));
-uploadZone.addEventListener('drop',e=>{e.preventDefault();uploadZone.classList.remove('drag-over');const f=e.dataTransfer.files[0];if(f&&f.type.startsWith('image/'))loadImg(f);});
+uploadZone.addEventListener('drop',e=>{
+  e.preventDefault();uploadZone.classList.remove('drag-over');
+  const f=e.dataTransfer.files[0];
+  if(f&&f.type.startsWith('image/'))loadImg(f);
+});
 
 function loadImg(file){
-  const r=new FileReader();
-  r.onload=ev=>{
-    imgB64=ev.target.result.split(',')[1];
-    previewImg.src=ev.target.result;
-    previewImg.style.display='block';
-    uploadContent.style.display='none';
-    classifyBtn.style.display='inline-block';
-    resetResult();
-  };
-  r.readAsDataURL(file);
+  currentFile=file;
+  const url=URL.createObjectURL(file);
+  previewImg.src=url;
+  previewImg.style.display='block';
+  uploadContent.style.display='none';
+  classifyBtn.style.display='inline-block';
+  resetResult();
 }
 
 function resetResult(){
@@ -430,43 +459,50 @@ function resetResult(){
   document.getElementById('resultOutput').style.display='none';
 }
 
+// ── CLASIFICACIÓN CON TENSORFLOW.JS ──────────────────────────────────────────
 async function classifyImage(){
-  if(!imgB64)return;
+  if(!currentFile){return;}
+  if(!model){
+    showError('El modelo aún está cargando. Espera un momento e intenta de nuevo.');
+    return;
+  }
   classifyBtn.disabled=true;
   document.getElementById('resultIdle').style.display='none';
   document.getElementById('resultLoading').style.display='block';
   document.getElementById('resultOutput').style.display='none';
 
-  const prompt=`You are a clothing classifier. Analyze this image and classify the garment into exactly one of these 24 categories:
-black_dress, black_pants, black_shirt, black_shoes, black_shorts,
-blue_dress, blue_pants, blue_shirt, blue_shoes, blue_shorts,
-brown_pants, brown_shoes, brown_shorts, green_pants, green_shirt,
-green_shoes, green_shorts, red_dress, red_pants, red_shoes,
-white_dress, white_pants, white_shoes, white_shorts.
-
-Respond ONLY with valid JSON (no markdown, no explanation):
-{"predicted":"<class>","confidence":<0-1>,"top5":[{"class":"<class>","prob":<0-1>},{"class":"<class>","prob":<0-1>},{"class":"<class>","prob":<0-1>},{"class":"<class>","prob":<0-1>},{"class":"<class>","prob":<0-1>}]}
-All classes must be from the 24 categories. Probabilities in top5 must sum to ~1.`;
-
   try{
-    const res=await fetch('https://api.anthropic.com/v1/messages',{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({
-        model:'claude-sonnet-4-20250514',max_tokens:400,
-        messages:[{role:'user',content:[
-          {type:'image',source:{type:'base64',media_type:'image/jpeg',data:imgB64}},
-          {type:'text',text:prompt}
-        ]}]
-      })
+    // Crear imagen temporal para leer píxeles
+    const imgEl=new Image();
+    imgEl.src=URL.createObjectURL(currentFile);
+    await new Promise(res=>imgEl.onload=res);
+
+    // Preprocesar: resize 128×128, normalizar [0,1], añadir batch
+    const tensor=tf.tidy(()=>
+      tf.browser.fromPixels(imgEl)
+        .resizeBilinear([IMG_SIZE,IMG_SIZE])
+        .toFloat().div(255.0)
+        .expandDims(0)
+    );
+
+    // Predicción
+    const predsTensor=model.predict(tensor);
+    const probs=await predsTensor.data();
+    tensor.dispose();
+    predsTensor.dispose();
+
+    // Ordenar y tomar top 5
+    const indexed=Array.from(probs)
+      .map((p,i)=>({class:CLASS_NAMES[i],prob:p}))
+      .sort((a,b)=>b.prob-a.prob);
+
+    showResult({
+      predicted:indexed[0].class,
+      confidence:indexed[0].prob,
+      top5:indexed.slice(0,5)
     });
-    const data=await res.json();
-    const text=data.content.map(b=>b.text||'').join('').replace(/```json|```/g,'').trim();
-    showResult(JSON.parse(text));
   }catch(err){
-    document.getElementById('resultLoading').style.display='none';
-    document.getElementById('resultIdle').style.display='block';
-    document.getElementById('resultIdle').innerHTML=`<div class="r-label" style="color:#eb5757">Error de conexión</div><div style="font-family:var(--mono);font-size:11px;color:rgba(255,255,255,.4);margin-top:8px;line-height:1.8">No se pudo conectar con la API.<br>Verifica tu conexión a internet.</div>`;
+    showError('Error al clasificar: '+err.message);
   }finally{
     classifyBtn.disabled=false;
   }
@@ -483,6 +519,14 @@ function showResult(result){
     const pct=Math.round(item.prob*100);
     barsEl.innerHTML+=`<div class="rb-row"><div class="rb-name">${item.class}</div><div class="rb-track"><div class="rb-fill ${i>0?'dim':''}" style="width:${pct}%"></div></div><div class="rb-pct">${pct}%</div></div>`;
   });
+}
+
+function showError(msg){
+  document.getElementById('resultLoading').style.display='none';
+  document.getElementById('resultIdle').style.display='block';
+  document.getElementById('resultIdle').innerHTML=`
+    <div class="r-label" style="color:#eb5757">Error</div>
+    <div style="font-family:var(--mono);font-size:11px;color:rgba(255,255,255,.4);margin-top:8px;line-height:1.8">${msg}</div>`;
 }
 </script>
 </body>
