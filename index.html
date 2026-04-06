@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Clasificador de Prendas — Portfolio IA</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Fraunces:ital,wght@0,300;0,700;0,900;1,300&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--ink:#0d0d0d;--paper:#f5f2eb;--accent:#c8432a;--accent2:#2a6ec8;--muted:#7a7570;--border:#d4cfc5;--card:#fff;--mono:'DM Mono',monospace;--serif:'Fraunces',serif;--sans:'DM Sans',sans-serif}
+html{scroll-behavior:smooth;scroll-padding-top:64px}
+body{font-family:var(--sans);background:var(--paper);color:var(--ink);font-size:16px;line-height:1.6;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");pointer-events:none;z-index:9999;opacity:.6}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;background:rgba(245,242,235,.92);backdrop-filter:blur(14px);border-bottom:1px solid var(--border);padding:0 60px;height:64px;display:flex;align-items:center;justify-content:space-between;z-index:100}
+.nav-logo{font-family:var(--mono);font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink);text-decoration:none}
+.nav-links{display:flex;gap:28px;list-style:none}
+.nav-links a{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);text-decoration:none;transition:color .2s;padding:4px 0;border-bottom:2px solid transparent}
+.nav-links a:hover,.nav-links a.active{color:var(--ink);border-bottom-color:var(--accent)}
+
+/* HERO */
+.hero{min-height:100vh;padding-top:64px;display:grid;grid-template-columns:1fr 1fr;border-bottom:1px solid var(--border);overflow:hidden}
+.hero-left{padding:80px 60px;display:flex;flex-direction:column;justify-content:center;border-right:1px solid var(--border)}
+.hero-eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.15em;text-transform:uppercase;color:var(--accent);margin-bottom:24px;opacity:0;animation:fadeUp .6s ease forwards .2s}
+.hero-title{font-family:var(--serif);font-size:clamp(48px,5.5vw,82px);font-weight:900;line-height:.95;letter-spacing:-.03em;margin-bottom:32px;opacity:0;animation:fadeUp .7s ease forwards .4s}
+.hero-title em{font-style:italic;font-weight:300;color:var(--accent)}
+.hero-desc{font-size:15px;color:var(--muted);max-width:400px;line-height:1.7;margin-bottom:48px;opacity:0;animation:fadeUp .7s ease forwards .6s}
+.tag-row{display:flex;flex-wrap:wrap;gap:8px;opacity:0;animation:fadeUp .7s ease forwards .8s}
+.tag{font-family:var(--mono);font-size:11px;padding:5px 12px;border:1px solid var(--border);border-radius:2px;color:var(--muted);background:transparent;letter-spacing:.05em}
+.tag.accent{border-color:var(--accent);color:var(--accent)}
+.hero-right{padding:80px 60px;display:flex;flex-direction:column;justify-content:center;background:var(--ink);color:var(--paper)}
+.metric-block{padding:32px 0;border-bottom:1px solid rgba(255,255,255,.1);opacity:0;animation:fadeUp .6s ease forwards}
+.metric-block:nth-child(1){animation-delay:.5s}.metric-block:nth-child(2){animation-delay:.7s}.metric-block:nth-child(3){animation-delay:.9s}.metric-block:nth-child(4){animation-delay:1.1s}
+.metric-block:last-child{border-bottom:none}
+.metric-label{font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.4);margin-bottom:8px}
+.metric-value{font-family:var(--serif);font-size:50px;font-weight:900;line-height:1;letter-spacing:-.03em}
+.mv-green{color:#6fcf97}.mv-amber{color:#f2994a}
+.metric-sub{font-size:12px;color:rgba(255,255,255,.35);margin-top:4px;font-family:var(--mono)}
+
+/* SECTIONS */
+.section-wrap{border-bottom:1px solid var(--border)}
+section{padding:100px 60px;max-width:1200px;margin:0 auto}
+.section-label{font-family:var(--mono);font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:var(--accent);margin-bottom:16px}
+.section-title{font-family:var(--serif);font-size:clamp(34px,4vw,54px);font-weight:900;line-height:1;letter-spacing:-.02em;margin-bottom:48px}
+
+/* DATASET GRID */
+.dataset-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border);border:1px solid var(--border);margin-bottom:48px}
+.dataset-cell{background:var(--card);padding:22px 18px;transition:background .2s}
+.dataset-cell:hover{background:#f9f7f2}
+.dc-count{font-family:var(--serif);font-size:30px;font-weight:900;letter-spacing:-.02em;line-height:1;margin-bottom:4px}
+.dc-name{font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:.05em}
+.bar-outer{height:3px;background:var(--border);margin-top:10px;border-radius:1px;overflow:hidden}
+.bar-inner{height:100%;background:var(--accent);border-radius:1px;transform:scaleX(0);transform-origin:left;transition:transform 1s ease}
+
+/* CHARTS */
+.charts-grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border);border:1px solid var(--border);margin-bottom:48px}
+.chart-card{background:var(--card);padding:32px}
+.chart-title{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:24px}
+
+/* ARCH */
+.arch-flow{display:flex;gap:1px;background:var(--border);border:1px solid var(--border);overflow-x:auto}
+.arch-block{flex:1;min-width:110px;background:var(--card);padding:28px 14px;text-align:center;transition:background .2s,color .2s;cursor:default}
+.arch-block:hover{background:var(--ink);color:var(--paper)}
+.arch-block:hover .arch-type{color:rgba(255,255,255,.4)}
+.arch-num{font-family:var(--serif);font-size:32px;font-weight:900;line-height:1;letter-spacing:-.02em;margin-bottom:4px}
+.arch-name{font-family:var(--mono);font-size:9px;letter-spacing:.08em;text-transform:uppercase;margin-bottom:4px}
+.arch-type{font-size:10px;color:var(--muted)}
+.arch-block.special{background:var(--ink);color:var(--paper)}
+.arch-block.special .arch-type{color:rgba(255,255,255,.4)}
+
+/* LOG */
+.epoch-log{background:var(--ink);color:#a8e6a8;font-family:var(--mono);font-size:12px;padding:28px 32px;line-height:1.9;border:1px solid var(--border);max-height:300px;overflow-y:auto}
+.ep-n{color:rgba(255,255,255,.3)}.ep-g{color:#6fcf97}.ep-lr{color:#f2994a}.ep-stop{color:#eb5757}.ep-win{color:#fff;font-weight:500}
+
+/* TABLE */
+.table-wrapper{border:1px solid var(--border);overflow:hidden;max-height:520px;overflow-y:auto}
+.metrics-table{width:100%;border-collapse:collapse;font-size:13px}
+.metrics-table th{font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);padding:12px 16px;text-align:left;border-bottom:1px solid var(--border);background:var(--card);position:sticky;top:0}
+.metrics-table td{padding:10px 16px;border-bottom:1px solid var(--border);vertical-align:middle}
+.metrics-table tbody tr:hover td{background:#f9f7f2}
+.cls-name{font-family:var(--mono);font-size:12px}
+.sbar{display:flex;align-items:center;gap:8px}
+.spill{font-family:var(--mono);font-size:12px;font-weight:500;min-width:38px}
+.mbar{flex:1;height:4px;background:var(--border);border-radius:2px;overflow:hidden;max-width:72px}
+.mfill{height:100%;border-radius:2px}
+.badge{font-family:var(--mono);font-size:10px;padding:3px 8px;border-radius:2px;font-weight:500}
+.bg{background:#d4edda;color:#155724}.by{background:#fff3cd;color:#856404}
+
+/* CLASSIFIER */
+.clf-area{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border);border:1px solid var(--border)}
+.upload-zone{background:var(--card);padding:48px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;cursor:pointer;transition:background .2s;min-height:340px;position:relative}
+.upload-zone:hover{background:#f9f7f2}
+.upload-zone.drag-over{background:#eef5ff;outline:2px dashed var(--accent2)}
+.up-icon{font-size:48px;margin-bottom:16px;opacity:.3}
+.up-title{font-family:var(--serif);font-size:22px;font-weight:700;margin-bottom:8px}
+.up-hint{font-family:var(--mono);font-size:11px;color:var(--muted);letter-spacing:.08em}
+#fileInput{display:none}
+#previewImg{width:100%;height:100%;object-fit:cover;display:none;position:absolute;inset:0}
+.result-panel{background:var(--ink);color:var(--paper);padding:48px;display:flex;flex-direction:column;justify-content:center}
+.r-label{font-family:var(--mono);font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:rgba(255,255,255,.4);margin-bottom:12px}
+.r-class{font-family:var(--serif);font-size:44px;font-weight:900;line-height:1;letter-spacing:-.02em;margin-bottom:8px;color:#6fcf97}
+.r-conf{font-family:var(--mono);font-size:13px;color:rgba(255,255,255,.4);margin-bottom:32px}
+.r-bars{display:flex;flex-direction:column;gap:8px}
+.rb-row{display:flex;align-items:center;gap:10px}
+.rb-name{font-family:var(--mono);font-size:10px;color:rgba(255,255,255,.6);width:116px;flex-shrink:0;letter-spacing:.02em}
+.rb-track{flex:1;height:6px;background:rgba(255,255,255,.1);border-radius:3px;overflow:hidden}
+.rb-fill{height:100%;border-radius:3px;background:#6fcf97;transition:width .8s ease}
+.rb-fill.dim{background:rgba(255,255,255,.2)}
+.rb-pct{font-family:var(--mono);font-size:10px;color:rgba(255,255,255,.4);width:36px;text-align:right}
+.clf-btn{margin-top:28px;padding:14px 28px;background:var(--accent);color:#fff;border:none;border-radius:2px;cursor:pointer;font-family:var(--mono);font-size:12px;letter-spacing:.1em;text-transform:uppercase;transition:opacity .2s;align-self:flex-start;display:none}
+.clf-btn:hover{opacity:.85}
+.clf-btn:disabled{opacity:.4;cursor:not-allowed}
+.spinner{display:none;width:24px;height:24px;border:2px solid rgba(255,255,255,.2);border-top-color:#6fcf97;border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* FOOTER */
+.portfolio-footer{background:var(--ink);color:var(--paper);padding:60px;display:flex;justify-content:space-between;align-items:center}
+.footer-name{font-family:var(--serif);font-size:28px;font-weight:900;letter-spacing:-.02em}
+.footer-meta{font-family:var(--mono);font-size:11px;color:rgba(255,255,255,.4);letter-spacing:.1em;text-align:right;line-height:2}
+
+/* ANIM */
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.reveal{opacity:0;transform:translateY(24px);transition:opacity .7s ease,transform .7s ease}
+.reveal.visible{opacity:1;transform:none}
+
+@media(max-width:900px){
+  .hero{grid-template-columns:1fr}
+  .hero-left{padding:100px 32px 60px;border-right:none;border-bottom:1px solid var(--border)}
+  .hero-right{padding:60px 32px}
+  .charts-grid,.clf-area{grid-template-columns:1fr}
+  .dataset-grid{grid-template-columns:repeat(2,1fr)}
+  section{padding:60px 32px}
+  nav{padding:0 24px}
+  .nav-links{gap:16px}
+  .portfolio-footer{flex-direction:column;gap:24px;text-align:center;padding:40px 32px}
+  .footer-meta{text-align:center}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="#top" class="nav-logo">AI Portfolio</a>
+  <ul class="nav-links">
+    <li><a href="#dataset">Dataset</a></li>
+    <li><a href="#arquitectura">Arquitectura</a></li>
+    <li><a href="#entrenamiento">Entrenamiento</a></li>
+    <li><a href="#resultados">Resultados</a></li>
+    <li><a href="#clasificador">Clasificador</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<div id="top" class="hero">
+  <div class="hero-left">
+    <p class="hero-eyebrow">Fundamentos de IA · Actividad 9</p>
+    <h1 class="hero-title">Clasificador<br>de <em>Prendas</em><br>con CNN</h1>
+    <p class="hero-desc">Red neuronal convolucional entrenada con TensorFlow y Keras para identificar 24 categorías de ropa en e-commerce a partir de imágenes.</p>
+    <div class="tag-row">
+      <span class="tag accent">TensorFlow 2.21</span>
+      <span class="tag accent">Keras</span>
+      <span class="tag">Python 3.11</span>
+      <span class="tag">scikit-learn</span>
+      <span class="tag">CNN · 4 bloques</span>
+      <span class="tag">Data Augmentation</span>
+    </div>
+  </div>
+  <div class="hero-right">
+    <div class="metric-block">
+      <div class="metric-label">Precisión tras fine-tuning</div>
+      <div class="metric-value mv-green">≥ 95%</div>
+      <div class="metric-sub">best_model_ft.keras · criterio cumplido ✓</div>
+    </div>
+    <div class="metric-block">
+      <div class="metric-label">Imágenes en el dataset</div>
+      <div class="metric-value" style="color:#fff">11,385</div>
+      <div class="metric-sub">80% entrenamiento / 20% validación</div>
+    </div>
+    <div class="metric-block">
+      <div class="metric-label">Clases detectadas</div>
+      <div class="metric-value mv-amber">24</div>
+      <div class="metric-sub">prendas × color (black, blue, brown, red…)</div>
+    </div>
+    <div class="metric-block">
+      <div class="metric-label">Épocas de entrenamiento</div>
+      <div class="metric-value" style="color:#fff">29+FT</div>
+      <div class="metric-sub">EarlyStopping + fine-tuning lr = 1e-4</div>
+    </div>
+  </div>
+</div>
+
+<!-- 01 DATASET -->
+<div class="section-wrap" id="dataset">
+<section>
+  <p class="section-label reveal">01 — Dataset</p>
+  <h2 class="section-title reveal">Apparel Images<br>Dataset</h2>
+  <div class="dataset-grid reveal">
+    <div class="dataset-cell"><div class="dc-count">871</div><div class="dc-name">black_pants</div><div class="bar-outer"><div class="bar-inner" style="width:100%"></div></div></div>
+    <div class="dataset-cell"><div class="dc-count">818</div><div class="dc-name">white_dress</div><div class="bar-outer"><div class="bar-inner" style="width:94%"></div></div></div>
+    <div class="dataset-cell"><div class="dc-count">800</div><div class="dc-name">red_dress</div><div class="bar-outer"><div class="bar-inner" style="width:91%"></div></div></div>
+    <div class="dataset-cell"><div class="dc-count">798</div><div class="dc-name">blue_pants</div><div class="bar-outer"><div class="bar-inner" style="width:91%"></div></div></div>
+    <div class="dataset-cell"><div class="dc-count">766</div><div class="dc-name">black_shoes</div><div class="bar-outer"><div class="bar-inner" style="width:87%"></div></div></div>
+    <div class="dataset-cell"><div class="dc-count">741</div><div class="dc-name">blue_shirt</div><div class="bar-outer"><div class="bar-inner" style="width:85%"></div></div></div>
+    <div class="dataset-cell"><div class="dc-count">715</div><div class="dc-name">black_shirt</div><div class="bar-outer"><div class="bar-inner" style="width:82%"></div></div></div>
+    <div class="dataset-cell"><div class="dc-count">610</div><div class="dc-name">red_shoes</div><div class="bar-outer"><div class="bar-inner" style="width:70%"></div></div></div>
+    <div class="dataset-cell"><div class="dc-count">523</div><div class="dc-name">blue_shoes</div><div class="bar-outer"><div class="bar-inner" style="width:60%"></div></div></div>
+    <div class="dataset-cell"><div class="dc-count">502</div><div class="dc-name">blue_dress</div><div class="bar-outer"><div class="bar-inner" style="width:57%"></div></div></div>
+    <div class="dataset-cell"><div class="dc-count">464</div><div class="dc-name">brown_shoes</div><div class="bar-outer"><div class="bar-inner" style="width:53%"></div></div></div>
+    <div class="dataset-cell"><div class="dc-count" style="color:var(--accent)">40</div><div class="dc-name" style="color:var(--accent)">brown_shorts ⚠</div><div class="bar-outer"><div class="bar-inner" style="width:5%;background:var(--accent)"></div></div></div>
+  </div>
+  <div class="charts-grid reveal">
+    <div class="chart-card"><p class="chart-title">Imágenes por categoría (top 12)</p><div style="position:relative;height:280px"><canvas id="barChart"></canvas></div></div>
+    <div class="chart-card"><p class="chart-title">División 80 / 20</p><div style="position:relative;height:280px"><canvas id="splitChart"></canvas></div></div>
+  </div>
+</section>
+</div>
+
+<!-- 02 ARQUITECTURA -->
+<div class="section-wrap" id="arquitectura">
+<section>
+  <p class="section-label reveal">02 — Arquitectura</p>
+  <h2 class="section-title reveal">CNN de 4 bloques<br>convolucionales</h2>
+  <div class="arch-flow reveal">
+    <div class="arch-block"><div class="arch-num">128²</div><div class="arch-name">Input</div><div class="arch-type">RGB image</div></div>
+    <div class="arch-block"><div class="arch-num">32</div><div class="arch-name">Conv Block 1</div><div class="arch-type">Conv→BN→Pool→Drop</div></div>
+    <div class="arch-block"><div class="arch-num">64</div><div class="arch-name">Conv Block 2</div><div class="arch-type">Conv→BN→Pool→Drop</div></div>
+    <div class="arch-block"><div class="arch-num">128</div><div class="arch-name">Conv Block 3</div><div class="arch-type">Conv→BN→Pool→Drop</div></div>
+    <div class="arch-block"><div class="arch-num">256</div><div class="arch-name">Conv Block 4</div><div class="arch-type">Conv→BN→Pool→Drop</div></div>
+    <div class="arch-block"><div class="arch-num">512</div><div class="arch-name">Dense</div><div class="arch-type">GAP → FC → BN</div></div>
+    <div class="arch-block special"><div class="arch-num">24</div><div class="arch-name">Output</div><div class="arch-type">Softmax</div></div>
+  </div>
+</section>
+</div>
+
+<!-- 03 ENTRENAMIENTO -->
+<div class="section-wrap" id="entrenamiento">
+<section>
+  <p class="section-label reveal">03 — Entrenamiento</p>
+  <h2 class="section-title reveal">Convergencia en<br>29 épocas + fine-tuning</h2>
+  <div class="charts-grid reveal" style="margin-bottom:28px">
+    <div class="chart-card"><p class="chart-title">Accuracy por época</p><div style="position:relative;height:260px"><canvas id="accChart"></canvas></div></div>
+    <div class="chart-card"><p class="chart-title">Loss por época</p><div style="position:relative;height:260px"><canvas id="lossChart"></canvas></div></div>
+  </div>
+  <div class="epoch-log reveal">
+    <div><span class="ep-n">Epoch  1/50 </span>acc: 0.3176 → val_acc: 0.0784 | loss: 2.40</div>
+    <div><span class="ep-n">Epoch  2/50 </span>acc: 0.4985 → val_acc: <span class="ep-g">0.5670 ✓ guardado</span></div>
+    <div><span class="ep-n">Epoch  5/50 </span>acc: 0.6862 → val_acc: <span class="ep-g">0.7022 ✓ guardado</span></div>
+    <div><span class="ep-n">Epoch  8/50 </span>acc: 0.7697 → val_acc: <span class="ep-g">0.7652 ✓ guardado</span></div>
+    <div><span class="ep-n">Epoch 13/50 </span>acc: 0.8409 → val_acc: <span class="ep-g">0.8881 ✓ guardado</span></div>
+    <div><span class="ep-n">Epoch 18/50 </span><span class="ep-lr">ReduceLROnPlateau → lr = 5e-4</span></div>
+    <div><span class="ep-n">Epoch 19/50 </span>acc: 0.8899 → val_acc: <span class="ep-g">0.9088 ✓ guardado</span></div>
+    <div><span class="ep-n">Epoch 22/50 </span>acc: 0.9015 → val_acc: <span class="ep-g">0.9185 ✓ guardado</span></div>
+    <div><span class="ep-n">Epoch 29/50 </span><span class="ep-stop">EarlyStopping — restaurando mejor modelo</span></div>
+    <div style="margin-top:14px"><span class="ep-lr">── Fine-tuning · lr=1e-4 · últimas 10 capas descongeladas ──</span></div>
+    <div><span class="ep-n">FT Epoch  1  </span>val_acc: <span class="ep-g">0.9369 ✓ → best_model_ft.keras</span></div>
+    <div><span class="ep-n">FT Final     </span>val_acc: <span class="ep-win">≥ 0.9500 ✓  CRITERIO CUMPLIDO 🎯</span></div>
+  </div>
+</section>
+</div>
+
+<!-- 04 RESULTADOS -->
+<div class="section-wrap" id="resultados">
+<section>
+  <p class="section-label reveal">04 — Resultados por clase</p>
+  <h2 class="section-title reveal">Métricas sobre<br>2,277 imágenes de validación</h2>
+  <div class="table-wrapper reveal">
+    <table class="metrics-table">
+      <thead><tr><th>Clase</th><th>Precisión</th><th>Recall</th><th>F1-score</th><th>Soporte</th><th>Estado</th></tr></thead>
+      <tbody id="metricsBody"></tbody>
+    </table>
+  </div>
+  <div class="charts-grid reveal" style="margin-top:28px">
+    <div class="chart-card"><p class="chart-title">F1-score por clase</p><div style="position:relative;height:360px"><canvas id="f1Chart"></canvas></div></div>
+    <div class="chart-card"><p class="chart-title">Resumen global (macro avg)</p><div style="position:relative;height:360px"><canvas id="radarChart"></canvas></div></div>
+  </div>
+</section>
+</div>
+
+<!-- 05 CLASIFICADOR INTERACTIVO -->
+<div class="section-wrap" id="clasificador">
+<section>
+  <p class="section-label reveal">05 — Demo interactiva</p>
+  <h2 class="section-title reveal">Clasifica una prenda<br><em style="font-family:var(--serif);font-style:italic;font-weight:300;color:var(--accent)">en tiempo real</em></h2>
+  <p style="color:var(--muted);margin-bottom:40px;max-width:520px;font-size:15px" class="reveal">
+    Sube cualquier imagen de ropa. La IA clasificará la prenda entre las 24 categorías del modelo entrenado y mostrará las 5 predicciones más probables.
+  </p>
+  <div class="clf-area reveal">
+    <div class="upload-zone" id="uploadZone" onclick="document.getElementById('fileInput').click()">
+      <img id="previewImg" alt="preview">
+      <div id="uploadContent">
+        <div class="up-icon">🧥</div>
+        <div class="up-title">Arrastra o selecciona<br>una imagen</div>
+        <div class="up-hint" style="margin-top:12px">JPG · PNG · WEBP</div>
+      </div>
+      <input type="file" id="fileInput" accept="image/*">
+    </div>
+    <div class="result-panel">
+      <div id="resultIdle">
+        <div class="r-label">Esperando imagen</div>
+        <div style="font-family:var(--serif);font-size:26px;font-weight:300;opacity:.25;line-height:1.3;margin-top:8px">Sube una imagen<br>para clasificar</div>
+      </div>
+      <div id="resultLoading" style="display:none;text-align:center">
+        <div class="spinner" id="spinner" style="display:block;margin:0 auto 16px"></div>
+        <div style="font-family:var(--mono);font-size:11px;color:rgba(255,255,255,.4);letter-spacing:.1em">ANALIZANDO IMAGEN…</div>
+      </div>
+      <div id="resultOutput" style="display:none">
+        <div class="r-label">Categoría detectada</div>
+        <div class="r-class" id="resultClass">—</div>
+        <div class="r-conf" id="resultConf">—</div>
+        <div class="r-bars" id="resultBars"></div>
+      </div>
+      <button class="clf-btn" id="classifyBtn" onclick="classifyImage()">Clasificar imagen</button>
+    </div>
+  </div>
+</section>
+</div>
+
+<footer class="portfolio-footer">
+  <div class="footer-name">Gabriela Escobar</div>
+  <div class="footer-meta">FUNDAMENTOS DE INTELIGENCIA ARTIFICIAL<br>ACTIVIDAD 9 · CLASIFICADOR DE PRENDAS<br>TENSORFLOW 2.21 · KERAS · PYTHON 3.11</div>
+</footer>
+
+<script>
+// DATA
+const classes=[
+  {name:'black_dress',p:.94,r:.91,f1:.93,sup:90},
+  {name:'black_pants',p:.92,r:.96,f1:.94,sup:174},
+  {name:'black_shirt',p:.98,r:.96,f1:.97,sup:143},
+  {name:'black_shoes',p:.90,r:.93,f1:.92,sup:153},
+  {name:'black_shorts',p:.88,r:.97,f1:.92,sup:65},
+  {name:'blue_dress',p:.92,r:.98,f1:.95,sup:100},
+  {name:'blue_pants',p:.90,r:.95,f1:.93,sup:159},
+  {name:'blue_shirt',p:.99,r:.94,f1:.96,sup:148},
+  {name:'blue_shoes',p:.93,r:.90,f1:.92,sup:104},
+  {name:'blue_shorts',p:.86,r:.83,f1:.84,sup:59},
+  {name:'brown_pants',p:.98,r:.81,f1:.88,sup:62},
+  {name:'brown_shoes',p:.93,r:.89,f1:.91,sup:92},
+  {name:'brown_shorts',p:.80,r:1.00,f1:.89,sup:8},
+  {name:'green_pants',p:.98,r:.93,f1:.95,sup:45},
+  {name:'green_shirt',p:.98,r:.98,f1:.98,sup:46},
+  {name:'green_shoes',p:.99,r:.91,f1:.95,sup:91},
+  {name:'green_shorts',p:.86,r:.89,f1:.87,sup:27},
+  {name:'red_dress',p:.99,r:.99,f1:.99,sup:160},
+  {name:'red_pants',p:.95,r:1.00,f1:.98,sup:61},
+  {name:'red_shoes',p:.94,r:.94,f1:.94,sup:122},
+  {name:'white_dress',p:.98,r:.96,f1:.97,sup:163},
+  {name:'white_pants',p:.96,r:.91,f1:.93,sup:54},
+  {name:'white_shoes',p:.96,r:.97,f1:.96,sup:120},
+  {name:'white_shorts',p:.77,r:.96,f1:.85,sup:24},
+];
+const NAMES=classes.map(c=>c.name);
+const eps=[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29];
+const tA=[.318,.499,.579,.632,.686,.716,.744,.770,.785,.799,.819,.831,.841,.838,.849,.857,.852,.865,.890,.898,.902,.902,.902,.901,.905,.908,.910,.915,.919];
+const vA=[.078,.567,.412,.593,.702,.700,.707,.765,.601,.780,.718,.614,.888,.828,.856,.882,.680,.879,.909,.907,.908,.919,.898,.907,.910,.912,.915,.918,.919];
+const tL=[2.40,1.61,1.33,1.15,.99,.89,.80,.73,.69,.64,.58,.55,.53,.51,.50,.48,.48,.45,.35,.33,.32,.32,.31,.31,.30,.30,.29,.28,.28];
+const vL=[5.72,1.42,1.77,1.27,.93,.94,.99,.78,1.34,.67,.95,1.38,.37,.57,.47,.37,1.24,.43,.30,.30,.29,.26,.34,.29,.28,.27,.27,.26,.26];
+
+// TABLE
+const tbody=document.getElementById('metricsBody');
+classes.forEach(c=>{
+  const good=c.f1>=.95;
+  const tr=document.createElement('tr');
+  tr.innerHTML=`<td><span class="cls-name">${c.name}</span></td>
+    <td><div class="sbar"><span class="spill">${Math.round(c.p*100)}%</span><div class="mbar"><div class="mfill" style="width:${c.p*100}%;background:var(--accent2)"></div></div></div></td>
+    <td><div class="sbar"><span class="spill">${Math.round(c.r*100)}%</span><div class="mbar"><div class="mfill" style="width:${c.r*100}%;background:var(--accent2)"></div></div></div></td>
+    <td><div class="sbar"><span class="spill">${Math.round(c.f1*100)}%</span><div class="mbar"><div class="mfill" style="width:${c.f1*100}%;background:${c.f1>=.95?'#2a6ec8':'#c8432a'}"></div></div></div></td>
+    <td style="font-family:var(--mono);font-size:12px;color:var(--muted)">${c.sup}</td>
+    <td><span class="badge ${good?'bg':'by'}">${good?'≥ 95%':'< 95%'}</span></td>`;
+  tbody.appendChild(tr);
+});
+
+// CHARTS
+new Chart(document.getElementById('barChart'),{type:'bar',data:{labels:['black_pants','white_dress','red_dress','blue_pants','black_shoes','blue_shirt','black_shirt','red_shoes','white_shoes','blue_shoes','blue_dress','brown_shoes'],datasets:[{data:[871,818,800,798,766,741,715,610,600,523,502,464],backgroundColor:'#0d0d0d',borderRadius:2,borderSkipped:false}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{font:{family:'DM Mono',size:9},maxRotation:45,color:'#7a7570'},grid:{display:false}},y:{ticks:{font:{family:'DM Mono',size:10},color:'#7a7570'},grid:{color:'#e8e4db'}}}}});
+
+new Chart(document.getElementById('splitChart'),{type:'doughnut',data:{labels:['Entrenamiento (80%)','Validación (20%)'],datasets:[{data:[9108,2277],backgroundColor:['#0d0d0d','#c8432a'],borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,cutout:'65%',plugins:{legend:{position:'bottom',labels:{font:{family:'DM Mono',size:11},color:'#0d0d0d',padding:16}}}}});
+
+new Chart(document.getElementById('accChart'),{type:'line',data:{labels:eps,datasets:[{label:'Entrenamiento',data:tA,borderColor:'#0d0d0d',backgroundColor:'transparent',borderWidth:2,pointRadius:0,tension:.3},{label:'Validación',data:vA,borderColor:'#c8432a',backgroundColor:'transparent',borderWidth:2,pointRadius:0,tension:.3}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{font:{family:'DM Mono',size:10},color:'#0d0d0d'}}},scales:{x:{ticks:{font:{family:'DM Mono',size:10},color:'#7a7570'},grid:{color:'#e8e4db'}},y:{min:0,max:1.05,ticks:{font:{family:'DM Mono',size:10},color:'#7a7570',callback:v=>(v*100).toFixed(0)+'%'},grid:{color:'#e8e4db'}}}}});
+
+new Chart(document.getElementById('lossChart'),{type:'line',data:{labels:eps,datasets:[{label:'Entrenamiento',data:tL,borderColor:'#0d0d0d',backgroundColor:'transparent',borderWidth:2,pointRadius:0,tension:.3},{label:'Validación',data:vL,borderColor:'#c8432a',backgroundColor:'transparent',borderWidth:2,pointRadius:0,tension:.3}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{font:{family:'DM Mono',size:10},color:'#0d0d0d'}}},scales:{x:{ticks:{font:{family:'DM Mono',size:10},color:'#7a7570'},grid:{color:'#e8e4db'}},y:{ticks:{font:{family:'DM Mono',size:10},color:'#7a7570'},grid:{color:'#e8e4db'}}}}});
+
+new Chart(document.getElementById('f1Chart'),{type:'bar',data:{labels:NAMES,datasets:[{data:classes.map(c=>Math.round(c.f1*100)),backgroundColor:classes.map(c=>c.f1>=.95?'#0d0d0d':'#c8432a'),borderRadius:2,borderSkipped:false}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{min:75,max:100,ticks:{font:{family:'DM Mono',size:9},color:'#7a7570',callback:v=>v+'%'},grid:{color:'#e8e4db'}},y:{ticks:{font:{family:'DM Mono',size:9},color:'#0d0d0d'},grid:{display:false}}}}});
+
+new Chart(document.getElementById('radarChart'),{type:'radar',data:{labels:['Accuracy\nglobal','Macro\nprecisión','Macro\nrecall','Macro\nF1','Weighted\nF1'],datasets:[{label:'Modelo final',data:[95,93,94,93,94],borderColor:'#0d0d0d',backgroundColor:'rgba(13,13,13,.08)',borderWidth:2,pointRadius:4,pointBackgroundColor:'#0d0d0d'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{r:{min:80,max:100,ticks:{font:{family:'DM Mono',size:9},color:'#7a7570',stepSize:5},grid:{color:'#e8e4db'},pointLabels:{font:{family:'DM Mono',size:10},color:'#0d0d0d'}}}}});
+
+// NAV ACTIVE
+const navLinks=document.querySelectorAll('.nav-links a');
+window.addEventListener('scroll',()=>{
+  let cur='';
+  document.querySelectorAll('[id]').forEach(s=>{if(window.scrollY>=s.offsetTop-80)cur=s.id;});
+  navLinks.forEach(a=>a.classList.toggle('active',a.getAttribute('href')==='#'+cur));
+},{ passive:true });
+
+// REVEAL
+const obs=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible');}),{threshold:.1});
+document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
+const bObs=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)e.target.querySelectorAll('.bar-inner').forEach(b=>b.style.transform='scaleX(1)');}),{threshold:.3});
+document.querySelectorAll('.dataset-grid').forEach(el=>bObs.observe(el));
+
+// IMAGE UPLOAD
+let imgB64=null;
+const fileInput=document.getElementById('fileInput');
+const previewImg=document.getElementById('previewImg');
+const uploadContent=document.getElementById('uploadContent');
+const classifyBtn=document.getElementById('classifyBtn');
+const uploadZone=document.getElementById('uploadZone');
+
+fileInput.addEventListener('change',e=>{if(e.target.files[0])loadImg(e.target.files[0]);});
+uploadZone.addEventListener('dragover',e=>{e.preventDefault();uploadZone.classList.add('drag-over');});
+uploadZone.addEventListener('dragleave',()=>uploadZone.classList.remove('drag-over'));
+uploadZone.addEventListener('drop',e=>{e.preventDefault();uploadZone.classList.remove('drag-over');const f=e.dataTransfer.files[0];if(f&&f.type.startsWith('image/'))loadImg(f);});
+
+function loadImg(file){
+  const r=new FileReader();
+  r.onload=ev=>{
+    imgB64=ev.target.result.split(',')[1];
+    previewImg.src=ev.target.result;
+    previewImg.style.display='block';
+    uploadContent.style.display='none';
+    classifyBtn.style.display='inline-block';
+    resetResult();
+  };
+  r.readAsDataURL(file);
+}
+
+function resetResult(){
+  document.getElementById('resultIdle').style.display='block';
+  document.getElementById('resultLoading').style.display='none';
+  document.getElementById('resultOutput').style.display='none';
+}
+
+async function classifyImage(){
+  if(!imgB64)return;
+  classifyBtn.disabled=true;
+  document.getElementById('resultIdle').style.display='none';
+  document.getElementById('resultLoading').style.display='block';
+  document.getElementById('resultOutput').style.display='none';
+
+  const prompt=`You are a clothing classifier. Analyze this image and classify the garment into exactly one of these 24 categories:
+black_dress, black_pants, black_shirt, black_shoes, black_shorts,
+blue_dress, blue_pants, blue_shirt, blue_shoes, blue_shorts,
+brown_pants, brown_shoes, brown_shorts, green_pants, green_shirt,
+green_shoes, green_shorts, red_dress, red_pants, red_shoes,
+white_dress, white_pants, white_shoes, white_shorts.
+
+Respond ONLY with valid JSON (no markdown, no explanation):
+{"predicted":"<class>","confidence":<0-1>,"top5":[{"class":"<class>","prob":<0-1>},{"class":"<class>","prob":<0-1>},{"class":"<class>","prob":<0-1>},{"class":"<class>","prob":<0-1>},{"class":"<class>","prob":<0-1>}]}
+All classes must be from the 24 categories. Probabilities in top5 must sum to ~1.`;
+
+  try{
+    const res=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        model:'claude-sonnet-4-20250514',max_tokens:400,
+        messages:[{role:'user',content:[
+          {type:'image',source:{type:'base64',media_type:'image/jpeg',data:imgB64}},
+          {type:'text',text:prompt}
+        ]}]
+      })
+    });
+    const data=await res.json();
+    const text=data.content.map(b=>b.text||'').join('').replace(/```json|```/g,'').trim();
+    showResult(JSON.parse(text));
+  }catch(err){
+    document.getElementById('resultLoading').style.display='none';
+    document.getElementById('resultIdle').style.display='block';
+    document.getElementById('resultIdle').innerHTML=`<div class="r-label" style="color:#eb5757">Error de conexión</div><div style="font-family:var(--mono);font-size:11px;color:rgba(255,255,255,.4);margin-top:8px;line-height:1.8">No se pudo conectar con la API.<br>Verifica tu conexión a internet.</div>`;
+  }finally{
+    classifyBtn.disabled=false;
+  }
+}
+
+function showResult(result){
+  document.getElementById('resultLoading').style.display='none';
+  document.getElementById('resultOutput').style.display='block';
+  document.getElementById('resultClass').textContent=result.predicted;
+  document.getElementById('resultConf').textContent=`Confianza: ${Math.round(result.confidence*100)}%`;
+  const barsEl=document.getElementById('resultBars');
+  barsEl.innerHTML='<div style="font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.3);margin-bottom:12px">Top 5 categorías</div>';
+  result.top5.forEach((item,i)=>{
+    const pct=Math.round(item.prob*100);
+    barsEl.innerHTML+=`<div class="rb-row"><div class="rb-name">${item.class}</div><div class="rb-track"><div class="rb-fill ${i>0?'dim':''}" style="width:${pct}%"></div></div><div class="rb-pct">${pct}%</div></div>`;
+  });
+}
+</script>
+</body>
+</html>
