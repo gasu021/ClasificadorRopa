@@ -3,13 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Clasificador de Prendas — Portfolio IA</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Fraunces:ital,wght@0,300;0,700;0,900;1,300&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<title>Clasificador de Prendas — G. Escobar</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.17.0/dist/tf.min.js"></script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-:root{--ink:#0d0d0d;--paper:#f5f2eb;--accent:#c8432a;--accent2:#2a6ec8;--muted:#7a7570;--border:#d4cfc5;--card:#fff;--mono:'DM Mono',monospace;--serif:'Fraunces',serif;--sans:'DM Sans',sans-serif}
+:root{--ink:#2C4A3E;--paper:#F5EDE0;--accent:#C0956A;--accent2:#4A8C70;--muted:#5A7A6A;--border:#D4C9B5;--card:#fff;--mono:'DM Mono',monospace;--serif:'Playfair Display',serif;--sans:'DM Sans',sans-serif}
 html{scroll-behavior:smooth;scroll-padding-top:64px}
 body{font-family:var(--sans);background:var(--paper);color:var(--ink);font-size:16px;line-height:1.6;overflow-x:hidden}
 body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");pointer-events:none;z-index:9999;opacity:.6}
@@ -143,7 +143,22 @@ section{padding:100px 60px;max-width:1200px;margin:0 auto}
 <body>
 
 <nav>
-  <a href="#top" class="nav-logo">AI Portfolio</a>
+  <a href="index.html" class="nav-logo" style="display:flex;align-items:center;gap:10px;text-decoration:none;">
+    <svg width="24" height="24" viewBox="0 0 72 72" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="36" cy="36" r="34" fill="#F5EDE0"/>
+      <ellipse cx="36" cy="36" rx="7" ry="17" transform="rotate(0 36 36)" fill="#4A8C70" opacity="0.72"/>
+      <ellipse cx="36" cy="36" rx="7" ry="17" transform="rotate(45 36 36)" fill="#C0956A" opacity="0.65"/>
+      <ellipse cx="36" cy="36" rx="7" ry="17" transform="rotate(90 36 36)" fill="#4A8C70" opacity="0.72"/>
+      <ellipse cx="36" cy="36" rx="7" ry="17" transform="rotate(135 36 36)" fill="#C0956A" opacity="0.65"/>
+      <ellipse cx="36" cy="36" rx="7" ry="17" transform="rotate(180 36 36)" fill="#4A8C70" opacity="0.72"/>
+      <ellipse cx="36" cy="36" rx="7" ry="17" transform="rotate(225 36 36)" fill="#C0956A" opacity="0.65"/>
+      <ellipse cx="36" cy="36" rx="7" ry="17" transform="rotate(270 36 36)" fill="#4A8C70" opacity="0.72"/>
+      <ellipse cx="36" cy="36" rx="7" ry="17" transform="rotate(315 36 36)" fill="#C0956A" opacity="0.65"/>
+      <circle cx="36" cy="36" r="6" fill="#8A6240" opacity="0.9"/>
+      <circle cx="36" cy="36" r="2" fill="#F5EDE0"/>
+    </svg>
+    <span style="font-family:'Playfair Display',serif;font-size:13px;font-weight:500;letter-spacing:2px;color:var(--ink);">G. ESCOBAR</span>
+  </a>
   <ul class="nav-links">
     <li><a href="#dataset">Dataset</a></li>
     <li><a href="#arquitectura">Arquitectura</a></li>
@@ -319,7 +334,22 @@ section{padding:100px 60px;max-width:1200px;margin:0 auto}
 </div>
 
 <footer class="portfolio-footer">
-  <div class="footer-name">Gabriela Escobar</div>
+  <div class="footer-name" style="display:flex;align-items:center;gap:12px;">
+    <svg width="32" height="32" viewBox="0 0 72 72" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="36" cy="36" r="34" fill="rgba(245,237,224,0.1)"/>
+      <ellipse cx="36" cy="36" rx="7" ry="17" transform="rotate(0 36 36)" fill="#7CB99A" opacity="0.6"/>
+      <ellipse cx="36" cy="36" rx="7" ry="17" transform="rotate(45 36 36)" fill="#C0956A" opacity="0.55"/>
+      <ellipse cx="36" cy="36" rx="7" ry="17" transform="rotate(90 36 36)" fill="#7CB99A" opacity="0.6"/>
+      <ellipse cx="36" cy="36" rx="7" ry="17" transform="rotate(135 36 36)" fill="#C0956A" opacity="0.55"/>
+      <ellipse cx="36" cy="36" rx="7" ry="17" transform="rotate(180 36 36)" fill="#7CB99A" opacity="0.6"/>
+      <ellipse cx="36" cy="36" rx="7" ry="17" transform="rotate(225 36 36)" fill="#C0956A" opacity="0.55"/>
+      <ellipse cx="36" cy="36" rx="7" ry="17" transform="rotate(270 36 36)" fill="#7CB99A" opacity="0.6"/>
+      <ellipse cx="36" cy="36" rx="7" ry="17" transform="rotate(315 36 36)" fill="#C0956A" opacity="0.55"/>
+      <circle cx="36" cy="36" r="6" fill="#8A6240" opacity="0.8"/>
+      <circle cx="36" cy="36" r="2" fill="rgba(245,237,224,0.5)"/>
+    </svg>
+    Gabriela Escobar
+  </div>
   <div class="footer-meta">FUNDAMENTOS DE INTELIGENCIA ARTIFICIAL<br>ACTIVIDAD 9 · CLASIFICADOR DE PRENDAS<br>TENSORFLOW 2.21 · KERAS · PYTHON 3.11</div>
 </footer>
 
@@ -364,26 +394,26 @@ classes.forEach(c=>{
   const good=c.f1>=.95;
   const tr=document.createElement('tr');
   tr.innerHTML=`<td><span class="cls-name">${c.name}</span></td>
-    <td><div class="sbar"><span class="spill">${Math.round(c.p*100)}%</span><div class="mbar"><div class="mfill" style="width:${c.p*100}%;background:var(--accent2)"></div></div></div></td>
-    <td><div class="sbar"><span class="spill">${Math.round(c.r*100)}%</span><div class="mbar"><div class="mfill" style="width:${c.r*100}%;background:var(--accent2)"></div></div></div></td>
-    <td><div class="sbar"><span class="spill">${Math.round(c.f1*100)}%</span><div class="mbar"><div class="mfill" style="width:${c.f1*100}%;background:${c.f1>=.95?'#2a6ec8':'#c8432a'}"></div></div></div></td>
+    <td><div class="sbar"><span class="spill">${Math.round(c.p*100)}%</span><div class="mbar"><div class="mfill" style="width:${c.p*100}%;background:#4A8C70"></div></div></div></td>
+    <td><div class="sbar"><span class="spill">${Math.round(c.r*100)}%</span><div class="mbar"><div class="mfill" style="width:${c.r*100}%;background:#4A8C70"></div></div></div></td>
+    <td><div class="sbar"><span class="spill">${Math.round(c.f1*100)}%</span><div class="mbar"><div class="mfill" style="width:${c.f1*100}%;background:${c.f1>=.95?'#2C4A3E':'#C0956A'}"></div></div></div></td>
     <td style="font-family:var(--mono);font-size:12px;color:var(--muted)">${c.sup}</td>
     <td><span class="badge ${good?'bg':'by'}">${good?'≥ 95%':'< 95%'}</span></td>`;
   tbody.appendChild(tr);
 });
 
 // CHARTS
-new Chart(document.getElementById('barChart'),{type:'bar',data:{labels:['black_pants','white_dress','red_dress','blue_pants','black_shoes','blue_shirt','black_shirt','red_shoes','white_shoes','blue_shoes','blue_dress','brown_shoes'],datasets:[{data:[871,818,800,798,766,741,715,610,600,523,502,464],backgroundColor:'#0d0d0d',borderRadius:2,borderSkipped:false}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{font:{family:'DM Mono',size:9},maxRotation:45,color:'#7a7570'},grid:{display:false}},y:{ticks:{font:{family:'DM Mono',size:10},color:'#7a7570'},grid:{color:'#e8e4db'}}}}});
+new Chart(document.getElementById('barChart'),{type:'bar',data:{labels:['black_pants','white_dress','red_dress','blue_pants','black_shoes','blue_shirt','black_shirt','red_shoes','white_shoes','blue_shoes','blue_dress','brown_shoes'],datasets:[{data:[871,818,800,798,766,741,715,610,600,523,502,464],backgroundColor:'#2C4A3E',borderRadius:2,borderSkipped:false}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{font:{family:'DM Mono',size:9},maxRotation:45,color:'#5A7A6A'},grid:{display:false}},y:{ticks:{font:{family:'DM Mono',size:10},color:'#5A7A6A'},grid:{color:'#D4C9B5'}}}}});
 
-new Chart(document.getElementById('splitChart'),{type:'doughnut',data:{labels:['Entrenamiento (80%)','Validación (20%)'],datasets:[{data:[9108,2277],backgroundColor:['#0d0d0d','#c8432a'],borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,cutout:'65%',plugins:{legend:{position:'bottom',labels:{font:{family:'DM Mono',size:11},color:'#0d0d0d',padding:16}}}}});
+new Chart(document.getElementById('splitChart'),{type:'doughnut',data:{labels:['Entrenamiento (80%)','Validación (20%)'],datasets:[{data:[9108,2277],backgroundColor:['#2C4A3E','#C0956A'],borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,cutout:'65%',plugins:{legend:{position:'bottom',labels:{font:{family:'DM Mono',size:11},color:'#2C4A3E',padding:16}}}}});
 
-new Chart(document.getElementById('accChart'),{type:'line',data:{labels:eps,datasets:[{label:'Entrenamiento',data:tA,borderColor:'#0d0d0d',backgroundColor:'transparent',borderWidth:2,pointRadius:0,tension:.3},{label:'Validación',data:vA,borderColor:'#c8432a',backgroundColor:'transparent',borderWidth:2,pointRadius:0,tension:.3}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{font:{family:'DM Mono',size:10},color:'#0d0d0d'}}},scales:{x:{ticks:{font:{family:'DM Mono',size:10},color:'#7a7570'},grid:{color:'#e8e4db'}},y:{min:0,max:1.05,ticks:{font:{family:'DM Mono',size:10},color:'#7a7570',callback:v=>(v*100).toFixed(0)+'%'},grid:{color:'#e8e4db'}}}}});
+new Chart(document.getElementById('accChart'),{type:'line',data:{labels:eps,datasets:[{label:'Entrenamiento',data:tA,borderColor:'#2C4A3E',backgroundColor:'transparent',borderWidth:2,pointRadius:0,tension:.3},{label:'Validación',data:vA,borderColor:'#C0956A',backgroundColor:'transparent',borderWidth:2,pointRadius:0,tension:.3}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{font:{family:'DM Mono',size:10},color:'#2C4A3E'}}},scales:{x:{ticks:{font:{family:'DM Mono',size:10},color:'#5A7A6A'},grid:{color:'#D4C9B5'}},y:{min:0,max:1.05,ticks:{font:{family:'DM Mono',size:10},color:'#5A7A6A',callback:v=>(v*100).toFixed(0)+'%'},grid:{color:'#D4C9B5'}}}}});
 
-new Chart(document.getElementById('lossChart'),{type:'line',data:{labels:eps,datasets:[{label:'Entrenamiento',data:tL,borderColor:'#0d0d0d',backgroundColor:'transparent',borderWidth:2,pointRadius:0,tension:.3},{label:'Validación',data:vL,borderColor:'#c8432a',backgroundColor:'transparent',borderWidth:2,pointRadius:0,tension:.3}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{font:{family:'DM Mono',size:10},color:'#0d0d0d'}}},scales:{x:{ticks:{font:{family:'DM Mono',size:10},color:'#7a7570'},grid:{color:'#e8e4db'}},y:{ticks:{font:{family:'DM Mono',size:10},color:'#7a7570'},grid:{color:'#e8e4db'}}}}});
+new Chart(document.getElementById('lossChart'),{type:'line',data:{labels:eps,datasets:[{label:'Entrenamiento',data:tL,borderColor:'#2C4A3E',backgroundColor:'transparent',borderWidth:2,pointRadius:0,tension:.3},{label:'Validación',data:vL,borderColor:'#C0956A',backgroundColor:'transparent',borderWidth:2,pointRadius:0,tension:.3}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{font:{family:'DM Mono',size:10},color:'#2C4A3E'}}},scales:{x:{ticks:{font:{family:'DM Mono',size:10},color:'#5A7A6A'},grid:{color:'#D4C9B5'}},y:{ticks:{font:{family:'DM Mono',size:10},color:'#5A7A6A'},grid:{color:'#D4C9B5'}}}}});
 
-new Chart(document.getElementById('f1Chart'),{type:'bar',data:{labels:NAMES,datasets:[{data:classes.map(c=>Math.round(c.f1*100)),backgroundColor:classes.map(c=>c.f1>=.95?'#0d0d0d':'#c8432a'),borderRadius:2,borderSkipped:false}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{min:75,max:100,ticks:{font:{family:'DM Mono',size:9},color:'#7a7570',callback:v=>v+'%'},grid:{color:'#e8e4db'}},y:{ticks:{font:{family:'DM Mono',size:9},color:'#0d0d0d'},grid:{display:false}}}}});
+new Chart(document.getElementById('f1Chart'),{type:'bar',data:{labels:NAMES,datasets:[{data:classes.map(c=>Math.round(c.f1*100)),backgroundColor:classes.map(c=>c.f1>=.95?'#2C4A3E':'#C0956A'),borderRadius:2,borderSkipped:false}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{min:75,max:100,ticks:{font:{family:'DM Mono',size:9},color:'#5A7A6A',callback:v=>v+'%'},grid:{color:'#D4C9B5'}},y:{ticks:{font:{family:'DM Mono',size:9},color:'#2C4A3E'},grid:{display:false}}}}});
 
-new Chart(document.getElementById('radarChart'),{type:'radar',data:{labels:['Accuracy\nglobal','Macro\nprecisión','Macro\nrecall','Macro\nF1','Weighted\nF1'],datasets:[{label:'Modelo final',data:[95,93,94,93,94],borderColor:'#0d0d0d',backgroundColor:'rgba(13,13,13,.08)',borderWidth:2,pointRadius:4,pointBackgroundColor:'#0d0d0d'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{r:{min:80,max:100,ticks:{font:{family:'DM Mono',size:9},color:'#7a7570',stepSize:5},grid:{color:'#e8e4db'},pointLabels:{font:{family:'DM Mono',size:10},color:'#0d0d0d'}}}}});
+new Chart(document.getElementById('radarChart'),{type:'radar',data:{labels:['Accuracy\nglobal','Macro\nprecisión','Macro\nrecall','Macro\nF1','Weighted\nF1'],datasets:[{label:'Modelo final',data:[95,93,94,93,94],borderColor:'#2C4A3E',backgroundColor:'rgba(44,74,62,.08)',borderWidth:2,pointRadius:4,pointBackgroundColor:'#2C4A3E'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{r:{min:80,max:100,ticks:{font:{family:'DM Mono',size:9},color:'#5A7A6A',stepSize:5},grid:{color:'#D4C9B5'},pointLabels:{font:{family:'DM Mono',size:10},color:'#2C4A3E'}}}}});
 
 // NAV ACTIVE
 const navLinks=document.querySelectorAll('.nav-links a');
